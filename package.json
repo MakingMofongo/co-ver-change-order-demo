@@ -1,0 +1,33 @@
+{
+  "name": "change-order-review",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Change-order review console — ingests a construction change-order PDF, extracts line items, compares them against the contract baseline, and flags likely overbilling (over-baseline pricing, duplicates, math errors, excessive markup, scope creep) for human estimator sign-off. Real, unit-tested engine.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gen:samples": "tsx scripts/gen-samples.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
+    "next": "^15.5.19",
+    "pdfjs-dist": "4.10.38",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.11",
+    "@types/node": "22.15.3",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "pdf-lib": "1.17.1",
+    "tailwindcss": "4.1.11",
+    "tsx": "4.20.6",
+    "typescript": "5.8.3",
+    "vitest": "3.2.4"
+  }
+}
