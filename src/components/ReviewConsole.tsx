@@ -103,11 +103,6 @@ export function ReviewConsole({
   const co = result?.changeOrder;
   const disputeLetter = co ? buildDisputeLetter(co, flags, decisions, DEMO_BASELINE) : "";
 
-  const provenance =
-    result?.extractedBy === "llm"
-      ? "Extraction: Claude (Anthropic API), server-side. The deterministic engine computed every flag — the model never invents the numbers."
-      : "Extraction: deterministic engine, on-device. Claude-powered extraction (Anthropic API) is wired server-side for messy real-world PDFs — one credit top-up from live.";
-
   return (
     <main className="mx-auto max-w-[1180px] px-6 py-10 sm:px-10 lg:px-14">
       {/* Header */}
@@ -190,7 +185,6 @@ export function ReviewConsole({
               disputedAmt={disputedAmt}
               payable={payable}
             />
-            <p className="mt-5 max-w-3xl text-[12px] leading-relaxed text-faint">{provenance}</p>
           </div>
 
           {/* Body */}
