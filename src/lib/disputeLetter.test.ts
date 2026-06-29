@@ -43,6 +43,10 @@ describe("buildDisputeLetter", () => {
     expect(letter).toContain(
       total.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }),
     );
+    // Dollar figures inside the sentence use thousands separators, consistent
+    // with the parenthetical amounts (e.g. "$2,280.00", never "$2280.00").
+    expect(letter).toContain("$2,280.00 above contract");
+    expect(letter).not.toMatch(/\$\d{4,}\.\d{2}/); // no comma-less 4+ digit dollars
   });
 
   it("reflects different disputes (real, not canned)", () => {

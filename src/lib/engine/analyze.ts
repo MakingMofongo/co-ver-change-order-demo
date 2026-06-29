@@ -17,6 +17,14 @@ function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
+/** Format a dollar amount with thousands separators, e.g. $2,280.00. */
+function usd(n: number): string {
+  return "$" + n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 let counter = 0;
 function flagId(): string {
   return `flag-${counter++}`;
@@ -56,7 +64,7 @@ export function analyzeChangeOrder(
         severity: overstated ? (extDelta >= 1000 ? "high" : "medium") : "low",
         lineItemId: item.id,
         title: "Extended amount does not equal qty x unit price",
-        detail: `${item.quantity} x $${item.unitPrice.toFixed(2)} = $${computedExt.toFixed(2)}, but the line bills $${item.extendedAmount.toFixed(2)} — a ${overstated ? "$" + extDelta.toFixed(2) + " overstatement" : "$" + Math.abs(extDelta).toFixed(2) + " understatement"}.`,
+        detail: `${item.quantity} x ${usd(item.unitPrice)} = ${usd(computedExt)}, but the line bills ${usd(item.extendedAmount)} — a ${overstated ? usd(extDelta) + " overstatement" : usd(Math.abs(extDelta)) + " understatement"}.`,
         exposure: Math.max(0, extDelta),
         computed: {
           quantity: item.quantity,
@@ -77,7 +85,7 @@ export function analyzeChangeOrder(
         severity: item.extendedAmount >= 5000 ? "critical" : "high",
         lineItemId: item.id,
         title: "Duplicate of an earlier line item",
-        detail: `Identical to "${item.description}" (${item.quantity} ${item.unit} @ $${item.unitPrice.toFixed(2)}) billed earlier on this change order. Appears charged twice.`,
+        detail: `Identical to "${item.description}" (${item.quantity} ${item.unit} @ ${usd(item.unitPrice)}) billed earlier on this change order. Appears charged twice.`,
         exposure: item.extendedAmount,
         computed: {
           firstOccurrence: seen.get(dupKey) ?? "",
@@ -104,7 +112,7 @@ export function analyzeChangeOrder(
           severity,
           lineItemId: item.id,
           title: `Unit price ${deltaPct.toFixed(1)}% over contract`,
-          detail: `Contract unit price for "${base.description}" is $${base.unitPrice.toFixed(2)}/${base.unit}; this change order bills $${item.unitPrice.toFixed(2)}/${item.unit}. At ${item.quantity} ${item.unit} that is $${exposure.toFixed(2)} above contract.`,
+          detail: `Contract unit price for "${base.description}" is ${usd(base.unitPrice)}/${base.unit}; this change order bills ${usd(item.unitPrice)}/${item.unit}. At ${item.quantity} ${item.unit} that is ${usd(exposure)} above contract.`,
           exposure,
           computed: {
             baselineUnitPrice: base.unitPrice,
@@ -161,7 +169,7 @@ export function analyzeChangeOrder(
       severity: "high",
       lineItemId: "",
       title: "Subtotal does not match the sum of line items",
-      detail: `Line items sum to $${computedSubtotal.toFixed(2)}, but the stated subtotal is $${statedSubtotal.toFixed(2)}.`,
+      detail: `Line items sum to ${usd(computedSubtotal)}, but the stated subtotal is ${usd(statedSubtotal)}.`,
       exposure: Math.max(0, round2(statedSubtotal - computedSubtotal)),
       computed: { computedSubtotal, statedSubtotal },
     });
@@ -178,7 +186,7 @@ export function analyzeChangeOrder(
       severity: deltaPts > 5 ? "high" : "medium",
       lineItemId: "",
       title: `Overhead & profit ${op.percent}% exceeds the ${baseline.terms.allowedOandPPct}% allowed`,
-      detail: `Contract allows ${baseline.terms.allowedOandPPct}% O&P; this change order applies ${op.percent}%. On a $${subtotalBase.toFixed(2)} base that is $${exposure.toFixed(2)} of excess markup.`,
+      detail: `Contract allows ${baseline.terms.allowedOandPPct}% O&P; this change order applies ${op.percent}%. On a ${usd(subtotalBase)} base that is ${usd(exposure)} of excess markup.`,
       exposure,
       computed: {
         allowedPct: baseline.terms.allowedOandPPct,
@@ -203,7 +211,7 @@ export function analyzeChangeOrder(
         severity: "high",
         lineItemId: "",
         title: "Total does not reconcile",
-        detail: `Subtotal $${subtotalBase.toFixed(2)} plus markups $${markupSum.toFixed(2)} = $${computedTotal.toFixed(2)}, but the stated total is $${co.statedTotal.toFixed(2)}.`,
+        detail: `Subtotal ${usd(subtotalBase)} plus markups ${usd(markupSum)} = ${usd(computedTotal)}, but the stated total is ${usd(co.statedTotal)}.`,
         exposure: 0,
         computed: { computedTotal, statedTotal: co.statedTotal },
       });
