@@ -23,7 +23,7 @@ change order and you get a different set of flags. Nothing is hardcoded.
 - `normalize.ts` — matches a billed line back to its contract unit price (unit-aware).
 - `analyze.ts` — the checks: over-baseline, duplicate, math error, rollup mismatch,
   excessive markup, scope creep, no-baseline. Each flag carries the numbers it fired on.
-- **32 unit tests** (`*.test.ts`): `npm test`.
+- **35 unit tests** (`*.test.ts`): `npm test` — the engine plus the dispute-letter composer.
 
 ## Two extraction paths
 
@@ -32,9 +32,10 @@ change order and you get a different set of flags. Nothing is hardcoded.
 | **LLM (Claude)** | Server build (Vercel/local) with `ANTHROPIC_API_KEY` | `/api/analyze` calls Claude (`claude-opus-4-8`) to extract line items from arbitrary, messy PDF layouts. The deterministic engine still does the money math — an LLM never invents the dollar figures on a financial review. |
 | **On-device** | Static build (GitHub Pages), or as a fallback | pdf.js extracts the text in the browser and the deterministic parser structures it — no key, no server, fully client-side. |
 
-The live demo (GitHub Pages) runs the **on-device** path. The Claude route is the production
-wiring (drops cleanly onto Convex + the Anthropic API); set `ANTHROPIC_API_KEY` on a server
-host to activate it.
+The live demo (GitHub Pages) runs the **on-device** path. The Claude route here is a Next.js
+server route (`src/app/api/analyze/route.ts`) — the same call ports cleanly to your Convex +
+Anthropic stack (a Convex action). The demo itself does not use Convex. Set `ANTHROPIC_API_KEY`
+on a server host to activate the live Claude path.
 
 ## Sample documents
 
